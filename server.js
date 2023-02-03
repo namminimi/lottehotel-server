@@ -6,6 +6,10 @@ const cors = require('cors');
 
 const mysql = require('mysql');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
+const saltRounds = 10; //변경횟수
+
+
 
 
 //서버 생성
@@ -71,6 +75,36 @@ app.get("/special/:no", (req,res)=>{
             res.send(result);
         })
 })
+
+//회원가입 요청(등록눌렀음)
+app.post("/join", async (req, res)=> {
+    //입력받은 비밀번호 mytextpass로 할당
+    const mytextpass = req.body.m_pass;
+    let myPass = "";
+    const {m_name, m_pass, m_phone, m_nickname, m_add1, m_add2, m_email} = req.body;
+    console.log(req.body)
+    //빈문자열이 아니고 undefined가 아닐 때
+    if(mytextpass != '' && mytextpass != undefined) {
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+            //hash 메소드 호출되면 인자로 넣어준 비밀번호를 암호화하여 콜백함수 안 hash로 돌려준다
+            bcrypt.hash(mytextpass, salt, function(err, hash) {  //암호화 시킨게 hash  1234-> skdlfj123i$#
+                myPass = hash;
+                //쿼리 작성
+                conn.query(`insert into member(m_name, m_pass, m_phone, m_nickname, m_address1, m_address2, m_email) values('${m_name}', '${myPass}', '${m_phone}', '${m_nickname}', '${m_add1}', '${m_add2}', '${m_email}')`
+                ,(err, result, fields)=>{
+                    if(result) {
+                        res.send("등록되었습니다.")
+                    }
+                    console.log(err)
+                })
+            });
+        });
+    }
+    // insert into member(m_name, m_pass, m_phone, m_nickname, m_add1, m_add2)
+    //values(${})
+    
+})
+
 
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
