@@ -105,6 +105,34 @@ app.post("/join", async (req, res)=> {
     
 })
 
+//로그인 요청
+app.post("/login",async (req, res)=>{
+    //useremail값에 일치하는 데이터가 있는지 확인
+    //userpass암호화해서 쿼리 결과의 패스워드랑 일치하는지 체크
+    const { useremail, userpass } = req.body;
+    conn.query(`select * from member where m_email = '${useremail}'`, 
+    (err, result, fields)=>{
+        console.log(result)
+        //결과가 undefiend가 아니고 결과의 0번째가 undefiend가 아닐때
+        //결과가 있을 떄
+        if(result != undefined && result[0] != undefined){ //result는 쿼리결과
+            bcrypt.compare(userpass, result[0].m_pass, function(err, rese){ //rese는 암호화한 값 결과
+                //result == true
+                if(rese){
+                    console.log("로그인 성공");
+                    res.send(result)
+                }else {
+                    console.log("로그인 실패");
+                    res.send("실패")
+                }
+            })//compare은 userpass를 암호화해서 result[0].mpass와 비교함 비교완료되면 오른쪽 함수 실행
+            
+        }else{
+            console.log("데이터가 없습니다.");
+        }
+    })
+})
+
 
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
