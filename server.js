@@ -133,6 +133,58 @@ app.post("/login",async (req, res)=>{
     })
 })
 
+//아이디 찾기 요청
+app.post("/findid", async (req, res)=>{
+    const {m_name, m_phone} = req.body;
+    conn.query(`select * from member where m_name = '${m_name}' and m_phone = '${m_phone}'`, 
+    (err,result, fields)=>{
+        if(result) {
+            console.log(result[0].m_email);
+            res.send(result[0].m_email);
+        }
+        console.log(err)
+    })
+})
+
+//비밀번호 찾기 요청
+app.post("/findpass", async (req, res)=>{
+    const {m_name, m_email} = req.body;
+    conn.query(`select * from member where m_name = '${m_name}' and m_email = '${m_email}'`, 
+    (err,result, fields)=>{
+        if(result) {
+            res.send(result[0].m_email);
+        }
+        console.log(err)
+    })
+})
+
+//비밀번호 변경 요청
+app.patch('/updatePw', async (req,res) => {
+    const {m_pass, m_email } = req.body;
+    //update 테이블 이름
+    //set 필드이름= 데이터값
+    //where 조건절 update member set m_pass
+    const mytextpass = m_pass
+    let myPass = ''
+    if(mytextpass != '' && mytextpass != undefined) {
+        bcrypt.genSalt(saltRounds, function(err, salt) {
+            //hash 메소드 호출되면 인자로 넣어준 비밀번호를 암호화하여 콜백함수 안 hash로 돌려준다
+            bcrypt.hash(mytextpass, salt, function(err, hash) {  //암호화 시킨게 hash  1234-> skdlfj123i$#
+                myPass = hash;
+                //쿼리 작성
+                conn.query(`update member set m_pass = '${myPass}' where m_email = '${m_email}'`  
+                ,(err, result, fields)=>{
+                    if(result) {
+                        res.send("등록되었습니다.")
+                        console.log(result)
+                    }
+                    console.log(err)
+                })
+            });
+        });
+    }
+})
+
 
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
