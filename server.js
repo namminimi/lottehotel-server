@@ -27,7 +27,7 @@ app.use(express.json());
 // upload폴더 클라이언트에서 접근 가능하도록 설정
 app.use("/upload", express.static("upload"));
 //Storage 생성
-const storage = multer.diskStorage({
+const storage = multer.diskStorage({ //이미지 저장소(스토리지저장소)
     destination: (req, file, cd)=>{
         cd(null, 'upload/event/');
     },
@@ -40,9 +40,11 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage })
 
 //upload경로로 post요청시 응답 구현하기
-app.post("/upload", upload.single("file"), (req,res)=>{
+app.post("/upload", upload.single("img"), (req,res)=>{
+    //<input type=file name="img"/>위에꺼 풀이
+    console.log("등록됨")
     res.send({
-        imageUrl: req.file.fieldname
+        imageUrl: req.file.filename
     })
 })
 
@@ -183,6 +185,22 @@ app.patch('/updatePw', async (req,res) => {
             });
         });
     }
+})
+
+//이벤트 등록 요청
+app.post('/event', async (req, res)=>{
+    const {e_title, e_time, e_titledesc, e_desc, e_category, e_img1, e_img2} = req.body;
+    //conn.query(`insert into 테이블이름(필드명.....) values(값...)`,콜백함수)
+    //conn.query(`insert into 테이블이름(필드명.....) values(?,?,?,?,?,?)`,[e_title, e_desc...],콜백함수)
+    conn.query(`insert into event(e_title, e_time, e_titledesc, e_desc, e_category, e_img1, e_img2) values(?,?,?,?,?,?,?)`,
+    [e_title, e_time, e_titledesc, e_desc, e_category, e_img1, e_img2],(err, result, fields)=>{
+        if(result){
+            console.log(result)
+            res.send("ok");
+        }else{
+            console.log(err);
+        }
+    })
 })
 
 
