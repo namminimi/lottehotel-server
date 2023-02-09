@@ -62,8 +62,9 @@ const conn = mysql.createConnection({
 conn.connect();
 
 //conn.query("쿼리문", 콜백함수)
-app.get('/special', (req,res)=> {
-    conn.query("select * from event where e_category = 'special'",
+app.get('/specials/:limits', (req,res)=> {
+    const {limits} =req.params
+    conn.query(`select * from event where e_category = 'special' limit ${limits}`,
     function(error, result, fields){
         res.send(result);
     }) //fields는 mysql의 칼럼을 받음
@@ -76,6 +77,14 @@ app.get("/special/:no", (req,res)=>{
     function(error, result, fields){
             res.send(result);
         })
+})
+
+//객실 데이터 불러오기
+app.get("/room", async (req, res)=>{
+    conn.query(`select * from guestroom`, (err, result, fields)=> {
+        console.log( result)
+        res.send(result)
+    })
 })
 
 //회원가입 요청(등록눌렀음)
@@ -198,6 +207,18 @@ app.post('/event', async (req, res)=>{
             console.log(result)
             res.send("ok");
         }else{
+            console.log(err);
+        }
+    })
+})
+//객실 등록 요청
+app.post('/room', async (req, res)=>{
+    const {r_name,r_size,r_price,r_bed,r_amenity,r_desc,r_img1,r_img2,r_img3,r_img4} = req.body
+    conn.query(`insert into guestroom(r_name, r_size ,r_price ,r_bed ,r_amenity ,r_desc ,r_img1 ,r_img2 ,r_img3 ,r_img4) values(?,?,?,?,?,?,?,?,?,?)`,
+    [r_name,r_size,r_price,r_bed,r_amenity,r_desc,r_img1,r_img2,r_img3,r_img4], (err, result, fields)=>{
+        if(result){
+            res.send("ok")
+        }else {
             console.log(err);
         }
     })
