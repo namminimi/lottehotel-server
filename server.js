@@ -87,6 +87,17 @@ app.get("/room", async (req, res)=>{
     })
 })
 
+
+//객실 데이터 요청
+app.get("/room/:no", async (req, res)=>{
+    const{no} = req.params
+    conn.query(`select * from guestroom where r_no=${no}`, (err, result, fields)=> {
+        console.log( result)
+        res.send(result[0])
+    })
+})
+
+
 //회원가입 요청(등록눌렀음)
 app.post("/join", async (req, res)=> {
     //입력받은 비밀번호 mytextpass로 할당
