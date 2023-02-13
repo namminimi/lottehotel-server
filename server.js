@@ -243,7 +243,10 @@ app.get("/searchRoom", async (req, res) => {
     //select rv_roomno from reservation where rv_checkin >= '${start}' and rv_checkin < '${end}'
     conn.query(`select rv_roomno from reservation where rv_checkin >= '${start}' and rv_checkin < '${end}'`,
     (err, result, fields)=>{
-        console.log(result)
+        // [{rv_roomno: "11"}] =====>[21]
+        result = result.map(re=>Number(re.rv_roomno))
+        console.log(result);
+        res.send(result);
     })
 })
 
