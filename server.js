@@ -234,7 +234,18 @@ app.post('/room', async (req, res)=>{
         }
     })
 })
-
+//객실 예약 관련****************************************
+//객실예약조회 요청
+app.get("/searchRoom", async (req, res) => {
+    //쿼리스트링 데이터 받기
+    const {start, end} = req.query;
+    // "2023-02-13"  "2023-02-16"
+    //select rv_roomno from reservation where rv_checkin >= '${start}' and rv_checkin < '${end}'
+    conn.query(`select rv_roomno from reservation where rv_checkin >= '${start}' and rv_checkin < '${end}'`,
+    (err, result, fields)=>{
+        console.log(result)
+    })
+})
 
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
