@@ -250,6 +250,19 @@ app.get("/searchRoom", async (req, res) => {
     })
 })
 
+//예약하기 요청
+app.post('/addReservation', async (req, res) => {
+    const {rv_email, rv_roomno , rv_checkin ,rv_checkout ,rv_adult,rv_child ,rv_desc,
+        rv_phone ,rv_name,rv_roomname ,rv_price}= req.body
+    conn.query(`insert into reservation(rv_email, rv_roomno , rv_checkin ,rv_checkout ,rv_adult,rv_child ,rv_desc,rv_phone ,rv_name,rv_roomname ,rv_price) values(?,?,?,?,?,?,?,?,?,?,?)`, [rv_email, rv_roomno , rv_checkin ,rv_checkout ,rv_adult,rv_child ,rv_desc,
+            rv_phone ,rv_name,rv_roomname ,rv_price], (err, result, fields)=>{
+                if(result){
+                    console.log("ok")
+                }
+            })    
+})
+
+
 app.listen(port, ()=>{
     console.log("서버가 동작하고 있습니다.")
 })
