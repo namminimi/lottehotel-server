@@ -15,7 +15,7 @@ const saltRounds = 10; //변경횟수
 //서버 생성
 const app = express();
 //프로세서의 주소 포트번호 지정
-const port = 8080;
+const port = process.env.PORT || 8080;
 
 //브라우저의 cors이슈를 막기위해 사용
 /* 서버에 요청하면 응답을 하는 구조
@@ -75,7 +75,13 @@ app.get("/special/:no", (req,res)=>{
     const {no} = req.params;
     conn.query(`select * from event where e_category = 'special' and e_no=${no}`,
     function(error, result, fields){
+        if(result){
             res.send(result);
+            console.log(result)
+        }else{
+            console.log(error)
+        }
+            
         })
 })
 
